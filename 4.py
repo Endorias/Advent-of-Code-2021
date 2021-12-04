@@ -4,7 +4,8 @@ import random as r
 #variables
 grid_sz = 5
 drawnNums = []
-
+MANUAL_INPUT = []
+boards = []
 #class for numbers in grid
 class Gvalues:
     def __init__(self, value, seen):
@@ -83,75 +84,137 @@ def drawNum(numList):
     numList.append(tmp)
     return (numList, tmp)
 
-#Creates all three boards
-b1 = createRandomBoard()
-b2 = createRandomBoard()
-b3 = createRandomBoard()
+#reads in boards and drawing
+#input: NULL
+#output: void
+def readBoards():
+    lines = []
+    with open('/home/endorias/Documents/python projects/Advent of code 2021/4.txt') as f:
+        lines = f.readlines()
 
-print("boards created") #debugging
+    count = 0
+    tmp_board = []
+    boardcount = 0
+    for line in lines:
+        count += 1
+        if count == 1:
+            tmp_array = line.split(',')
+            for i in range(len(tmp_array)):
+                MANUAL_INPUT.append(int(tmp_array[i]))
+        elif count > 2:
+            if line != "\n":
+                tmp_array = line.split(" ")
+                for x in tmp_array:
+                    if x == '':
+                        tmp_array.remove('')
+                for i in range(len(tmp_array)):
+                    tmp_board.append(Gvalues(int(tmp_array[i]), False))
+            if line == "\n":
+                boards.insert(boardcount, tmp_board)
+                tmp_board = []
+                boardcount += 1
 
-while len(drawnNums) < (grid_sz*grid_sz + 1):
-    
-    #draws a number and updates the drawn numbers list
-    toup = drawNum(drawnNums)
-    drawnNums = toup[0]
-    num = toup[1]
 
-    print("number drawn: ", num) #Prints drawn number into console
+#Advent of code puzzle solver
+def Manualgeneration():
+    readBoards()
 
-    #Marks the Bingo numbers on the boards as seen
-    for x in b1:
-        if x.getValue() == num:
-            x.seen = True
-    for x in b2:
-        if x.getValue() == num:
-            x.seen = True
-    for x in b3:
-        if x.getValue() == num:
-            x.seen = True
-    
+    for i in MANUAL_INPUT:
+        for board in boards:
+            for nums in board:
+                if nums.getValue() == i:
+                    nums.seen = True
+        print("number drawn: ", i)
 
-    #Assigns values for checking if a board won
-    b1win = bingoCheck(b1)
-    b2win = bingoCheck(b2)
-    b3win = bingoCheck(b3)
+        winningboards = 0
+        for board in boards:
+            if bingoCheck(board):
+                sum = 0
+                for x in board:
+                    if x.getSeen() == False:
+                        sum += x.getValue()
+                score = sum * i
+                print("Winning board score: " , score)#prints out the board name and score for this round
+                printGrid(board)
+                winningboards += 1
+                exit()
 
-    print("\n")
 
-    #Checks whether board 1 has gotten Bingo on the turn
-    if b1win:
-        sum = 0
+        
+
+
+#created an autogeneration for 3 boards and a randomized number drawing system
+def Autogeneration():
+    #Creates all three boards
+    b1 = createRandomBoard()
+    b2 = createRandomBoard()
+    b3 = createRandomBoard()
+
+    print("boards created") #debugging
+
+    while len(drawnNums) < (grid_sz*grid_sz + 1):
+        
+        #draws a number and updates the drawn numbers list
+        toup = drawNum(drawnNums)
+        drawnNums = toup[0]
+        num = toup[1]
+
+        print("number drawn: ", num) #Prints drawn number into console
+
+        #Marks the Bingo numbers on the boards as seen
         for x in b1:
-            if x.getSeen() == False:
-                sum += x.getValue()
-        score = sum * num
-        print("B1 score: " , score)#prints out the board name and score for this round
-        printGrid(b1)
-
-    #Checks whether board 2 has gotten Bingo on the turn
-    if b2win:
-        sum = 0
+            if x.getValue() == num:
+                x.seen = True
         for x in b2:
-            if x.getSeen() == False:
-                sum += x.getValue()
-        score = sum * num
-        print("B2 score: " , score) #prints out the board name and score for this round
-        printGrid(b2)
-
-    #Checks whether board 3 has gotten Bingo on the turn
-    if b3win:
-        sum = 0
+            if x.getValue() == num:
+                x.seen = True
         for x in b3:
-            if x.getSeen() == False:
-                sum += x.getValue()
-        score = sum * num
-        print("B3 score: " , score)#prints out the board name and score for this round
-        printGrid(b3)
-    
+            if x.getValue() == num:
+                x.seen = True
+        
 
-    #Exits program of one or more boards have gotten BINGO
-    if b1win or b2win or b3win:
-        exit()
-    else:
-        print("No Bingo")
+        #Assigns values for checking if a board won
+        b1win = bingoCheck(b1)
+        b2win = bingoCheck(b2)
+        b3win = bingoCheck(b3)
 
+        print("\n")
+
+        #Checks whether board 1 has gotten Bingo on the turn
+        if b1win:
+            sum = 0
+            for x in b1:
+                if x.getSeen() == False:
+                    sum += x.getValue()
+            score = sum * num
+            print("B1 score: " , score)#prints out the board name and score for this round
+            printGrid(b1)
+
+        #Checks whether board 2 has gotten Bingo on the turn
+        if b2win:
+            sum = 0
+            for x in b2:
+                if x.getSeen() == False:
+                    sum += x.getValue()
+            score = sum * num
+            print("B2 score: " , score) #prints out the board name and score for this round
+            printGrid(b2)
+
+        #Checks whether board 3 has gotten Bingo on the turn
+        if b3win:
+            sum = 0
+            for x in b3:
+                if x.getSeen() == False:
+                    sum += x.getValue()
+            score = sum * num
+            print("B3 score: " , score)#prints out the board name and score for this round
+            printGrid(b3)
+        
+
+        #Exits program of one or more boards have gotten BINGO
+        if b1win or b2win or b3win:
+            exit()
+        else:
+            print("No Bingo")
+
+Manualgeneration()
