@@ -89,7 +89,7 @@ def drawNum(numList):
 #output: void
 def readBoards():
     lines = []
-    with open('/home/endorias/Documents/python projects/Advent of code 2021/4.txt') as f:
+    with open('INSERT PATH HERE') as f:
         lines = f.readlines()
 
     count = 0
@@ -115,8 +115,8 @@ def readBoards():
                 boardcount += 1
 
 
-#Advent of code puzzle solver
-def Manualgeneration():
+#Advent of code puzzle solver part 1 day 4
+def partone():
     readBoards()
 
     for i in MANUAL_INPUT:
@@ -139,9 +139,32 @@ def Manualgeneration():
                 winningboards += 1
                 exit()
 
+#Advent of code puzzle solver part 2 day 4
+def parttwo():
+    readBoards()
 
-        
-
+    for i in MANUAL_INPUT:
+        for board in boards:
+            for nums in board:
+                if nums.getValue() == i:
+                    nums.seen = True
+        print("number drawn: ", i)
+        count = 0
+        for j in range(len(boards)):
+            if bingoCheck(boards[j-count]):
+                if len(boards) == 1:
+                    sum = 0
+                    for x in boards[j-count]:
+                        if x.getSeen() == False:
+                            sum += x.getValue()
+                    score = sum * i
+                    print("losing board score: " , score)#prints out the board name and score for this round
+                    printGrid(boards[j-count])
+                    exit()
+                else:
+                    boards.pop(j-count)
+                    count += 1
+                
 
 #created an autogeneration for 3 boards and a randomized number drawing system
 def Autogeneration():
@@ -217,4 +240,11 @@ def Autogeneration():
         else:
             print("No Bingo")
 
-Manualgeneration()
+
+#NOTE: UNCOMMENT THE TASK YOU WANT TO BE COMPLETED
+
+#partone()
+
+#parttwo()
+
+
